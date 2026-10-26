@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>个人工作台</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 首页 ============ -->
+  <section class="page is-active" id="page-home">
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <p class="greet" id="greet">早上好</p>
+          <p class="hero-date" id="heroDate">10月26日 星期日</p>
+        </div>
+        <button class="avatar" id="btnNick" type="button" aria-label="修改昵称">友</button>
+      </div>
+      <div class="clock">
+        <span id="clockMain">08:00</span><span class="clock-sec" id="clockSec">:00</span>
+      </div>
+      <div class="hero-chips">
+        <span class="chip"><i class="dot dot-green"></i><span id="chipStreak">连续记录 0 天</span></span>
+        <span class="chip"><i class="dot dot-orange"></i><span id="chipNext">暂无提醒</span></span>
+      </div>
+    </header>
+
+    <main class="content">
+      <article class="card tap" data-go="fat">
+        <div class="card-head">
+          <h2>减脂进度</h2>
+          <span class="card-link">去记录 ›</span>
+        </div>
+        <div class="metric-row">
+          <div>
+            <p class="metric" id="homeWeight">--</p>
+            <p class="metric-sub" id="homeWeightSub">还没有体重记录</p>
+          </div>
+          <div class="ring-mini">
+            <svg viewBox="0 0 44 44" aria-hidden="true">
+              <circle class="ring-bg" cx="22" cy="22" r="18"></circle>
+              <circle class="ring-fg" id="homeRingFg" cx="22" cy="22" r="18"></circle>
+            </svg>
+            <span id="homeRingPct">0%</span>
+          </div>
+        </div>
+        <div class="bar"><span id="homeBar" style="width:0%"></span></div>
+        <p class="hint" id="homeFatHint">设置起始体重和目标体重，开始记录吧</p>
+      </article>
+
+      <article class="card tap" data-go="focus">
+        <div class="card-head">
+          <h2>今日专注</h2>
+          <span class="card-link" id="focusState">开始 ›</span>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><b id="homeTomato">0</b><span>个番茄</span></div>
+          <div class="stat"><b id="homeFocusMin">0</b><span>分钟</span></div>
+          <div class="stat"><b id="homeRemindCount">0</b><span>条提醒</span></div>
+        </div>
+      </article>
+
+      <article class="card tap" data-go="remind">
+        <div class="card-head">
+          <h2>下一个提醒</h2>
+          <span class="card-link">去管理 ›</span>
+        </div>
+        <p class="next-remind" id="homeNextRemind">还没有设置提醒</p>
+        <p class="hint" id="homeNextRemindSub">设一个起床、喝水或下班提醒</p>
+      </article>
+    </main>
+  </section>
+
+  <!-- ============ 减脂 ============ -->
+  <section class="page" id="page-fat">
+    <header class="page-head">
+      <h1>减脂管理</h1>
+      <button class="ghost-btn" id="btnGoal" type="button">目标设置</button>
+    </header>
+    <main class="content">
+      <article class="card goal-card">
+        <div class="goal-top">
+          <div><span class="label">当前</span><b id="fatCurrent">--</b><span class="unit">kg</span></div>
+          <div class="goal-target"><span class="label">目标</span><b id="fatTarget">--</b><span class="unit">kg</span></div>
+        </div>
+        <div class="bar big"><span id="fatBar" style="width:0%"></span></div>
+        <div class="goal-meta">
+          <span id="fatLost">已减 0.0 kg</span>
+          <span id="fatTogo">还差 0.0 kg</span>
+        </div>
+        <p class="hint" id="fatBmi">填写身高可以算出 BMI</p>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>记录体重</h2><span class="card-link" id="fatLast">今天还没记录</span></div>
+        <div class="form-grid">
+          <input type="date" id="wDate">
+          <input type="number" id="wValue" inputmode="decimal" step="0.1" placeholder="体重 kg">
+          <input type="text" id="wNote" placeholder="备注（可选）" maxlength="20">
+          <button class="primary-btn" id="btnSaveWeight" type="button">保存</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>体重趋势</h2><span class="card-link" id="fatRange">近 14 天</span></div>
+        <div class="chart" id="fatChart"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>全部记录</h2><span class="card-link" id="fatCount">0 条</span></div>
+        <ul class="list" id="fatList"></ul>
+      </article>
+    </main>
+  </section>
+
+  <!-- ============ 专注 ============ -->
+  <section class="page" id="page-focus">
+    <header class="page-head">
+      <h1>专注计时</h1>
+      <span class="pill" id="focusModePill">专注 25</span>
+    </header>
+    <main class="content">
+      <div class="modes" id="modes">
+        <button class="mode is-active" data-mode="focus" type="button">专注 25</button>
+        <button class="mode" data-mode="short" type="button">短休息 5</button>
+        <button class="mode" data-mode="long" type="button">长休息 15</button>
+      </div>
+
+      <div class="timer">
+        <svg viewBox="0 0 240 240" class="timer-ring" aria-hidden="true">
+          <circle class="ring-bg" cx="120" cy="120" r="104"></circle>
+          <circle class="ring-fg" id="timerFg" cx="120" cy="120" r="104"></circle>
+        </svg>
+        <div class="timer-inner">
+          <p class="timer-time" id="timerTime">25:00</p>
+          <p class="timer-label" id="timerLabel">准备开始</p>
+        </div>
+      </div>
+
+      <div class="timer-actions">
+        <button class="primary-btn wide" id="btnTimer" type="button">开始专注</button>
+        <button class="ghost-btn" id="btnReset" type="button">重置</button>
+      </div>
+
+      <article class="card">
+        <div class="stat-row">
+          <div class="stat"><b id="focusToday">0</b><span>今日番茄</span></div>
+          <div class="stat"><b id="focusMinutes">0</b><span>今日分钟</span></div>
+          <div class="stat"><b id="focusTotal">0</b><span>累计番茄</span></div>
+        </div>
+      </article>
+
+      <p class="footnote">专注结束时 App 会发一条系统通知。若锁屏后收不到，请在系统设置里允许「个人工作台」的通知，并把它加入电池优化白名单。</p>
+    </main>
+  </section>
+
+  <!-- ============ 提醒 ============ -->
+  <section class="page" id="page-remind">
+    <header class="page-head">
+      <h1>时钟提醒</h1>
+      <span class="pill" id="remindCountPill">0 条</span>
+    </header>
+    <main class="content">
+      <article class="card banner" id="notifyBanner" hidden>
+        <p class="banner-text">通知权限没开，提醒到点也不会响。</p>
+        <div class="banner-actions">
+          <button class="primary-btn small" id="btnNotifyPerm" type="button">开启通知</button>
+          <button class="ghost-btn small" id="btnExactPerm" type="button">允许准时</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>新增提醒</h2></div>
+        <div class="form-grid">
+          <input type="time" id="rTime" value="07:30">
+          <input type="text" id="rLabel" placeholder="提醒内容，如 起床 / 喝水" maxlength="16">
+          <select id="rRepeat">
+            <option value="1">每天</option>
+            <option value="0">仅一次</option>
+          </select>
+          <button class="primary-btn" id="btnAddRemind" type="button">添加</button>
+        </div>
+      </article>
+
+      <ul class="list reminder-list" id="remindList"></ul>
+      <p class="footnote" id="remindFoot">提醒由系统闹钟触发，重启手机后会自动恢复。</p>
+    </main>
+  </section>
+
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button class="tab is-active" data-tab="home" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.6 12 3.5l9 7.1"/><path d="M5.5 9.4V20.5h13V9.4"/></svg>
+    <span>首页</span>
+  </button>
+  <button class="tab" data-tab="fat" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16"/><path d="M7.5 16V11"/><path d="M12 16V6.5"/><path d="M16.5 16v-3.2"/></svg>
+    <span>减脂</span>
+  </button>
+  <button class="tab" data-tab="focus" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8.2"/><path d="M12 9.2V13l2.6 1.8"/><path d="M9.5 2.8h5"/></svg>
+    <span>专注</span>
+  </button>
+  <button class="tab" data-tab="remind" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8.5a6 6 0 1 0-12 0c0 5.2-2 6.3-2 7.5h16c0-1.2-2-2.3-2-7.5Z"/><path d="M10.2 19.5a2 2 0 0 0 3.6 0"/></svg>
+    <span>提醒</span>
+  </button>
+</nav>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
