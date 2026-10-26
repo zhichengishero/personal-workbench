@@ -20,25 +20,36 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: 安装 Android SDK
-        uses: android-actions/setup-android@v3
+      - name: 检查 Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_HOME/platforms" || true
+          ls "$ANDROID_HOME/build-tools" || true
 
-      - name: 接受 SDK 许可
-        run: yes | sdkmanager --licenses > /dev/null || true
+      - name: 补齐 SDK 组件
+        run: |
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then
+            SDKMANAGER="$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -n 1)"
+          fi
+          echo "sdkmanager=$SDKMANAGER"
+          if [ -n "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+            "$SDKMANAGER" "platform-tools" "platforms;android-34" "build-tools;34.0.0" || true
+          fi
 
-      - name: 安装 SDK 组件
-        run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-
-      - name: 安装 Gradle 8.7
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.7'
+      - name: 下载 Gradle 8.7
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gradle.zip" https://services.gradle.org/distributions/gradle-8.7-bin.zip
+          unzip -q "$RUNNER_TEMP/gradle.zip" -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/gradle-8.7/bin" >> "$GITHUB_PATH"
 
       - name: 编译 APK
         run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: 上传 APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: personal-workbench-apk
           path: app/build/outputs/apk/debug/*.apk
